@@ -1,4 +1,4 @@
-name: Lint, Test and Release charts
+name: Lint and Test Charts
 
 on:
   pull_request:
@@ -9,46 +9,47 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - run: |
-          git remote add upstream https://github.com/kube-vip/helm-charts.git
-          git fetch upstream
-      - name: Set up Helm
-        uses: azure/setup-helm@v1
-        with:
-          version: v3.4.0
 
-      - uses: actions/setup-python@v2
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.0.0
+
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.7
+          python-version: "3.12"
+          check-latest: true
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.1.0
+        uses: helm/chart-testing-action@v2.6.1
 
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed --config tests/ct.yaml)
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
           if [[ -n "$changed" ]]; then
-            echo "::set-output name=changed::true"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
-      - name: Run chart-testing (lint-master)
-        run: ct lint --check-version-increment=false --config tests/ct.yaml
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.2.0
+
+      - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
+        run: ct lint --target-branch ${{ github.event.repository.default_branch }}
+
+      - name: Create kind cluster
+        if: steps.list-changed.outputs.changed == 'true'
+        uses: helm/kind-action@v1.9.0
 
       - name: Run chart-testing (install)
-        run: ct install --config tests/ct.yaml
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct install --target-branch ${{ github.event.repository.default_branch }}
 
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/heads/main')
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -58,6 +59,6 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.2.1
+        uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
