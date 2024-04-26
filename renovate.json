@@ -4,14 +4,6 @@
   "kubernetes": {
     "fileMatch": ["\\.yaml$"]
   },
-  "bumpVersion": "patch",
-  "enabledManagers": ["helmv3", "helm-values"],
-  "helm-values": {
-    "fileMatch": [
-      "charts/kube-vip/Chart.yaml$",
-      "charts/kube-vip-cloud-provider/Chart.yaml$"
-    ]
-  },
   "customManagers": [
     {
       "customType": "regex",
