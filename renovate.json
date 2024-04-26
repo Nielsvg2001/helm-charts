@@ -6,11 +6,6 @@
     "kubernetes": {
       "fileMatch": ["\\.yaml$"]
     },
-    "bumpVersion": "patch",
-    "enabledManagers": [
-      "helmv3",
-      "helm-values"
-    ],
     "customManagers": [
       {
         "customType": "regex",
