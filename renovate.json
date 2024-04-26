@@ -1,45 +1,38 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-      "config:base"
-    ],
-    "kubernetes": {
-      "fileMatch": ["\\.yaml$"]
-    },
-    "bumpVersion": "patch",
-    "enabledManagers": [
-      "helmv3",
-      "helm-values"
-    ],
-    "helm-values": {
-      "fileMatch": ["charts/kube-vip/Chart.yaml$", "charts/kube-vip-cloud-provider/Chart.yaml$"],
-    },
-    "customManagers": [
-      {
-        "customType": "regex",
-        "fileMatch": ["charts/kube-vip/Chart.yaml$"],
-        "matchStrings": [
-          "\\sappVersion: (?<currentValue>.*)\\s"
-        ],
-        "depNameTemplate": "kube-vip/kube-vip",
-        "datasourceTemplate": "github-releases"
-      },
-      {
-        "customType": "regex",
-        "fileMatch": ["charts/kube-vip-cloud-provider/Chart.yaml$"],
-        "matchStrings": [
-          "\\sappVersion: (?<currentValue>.*)\\s"
-        ],
-        "depNameTemplate": "kube-vip/kube-vip-cloud-provider",
-        "datasourceTemplate": "github-releases"
-      }
-    ],
-    "packageRules": [
-      {
-        "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-        "matchCurrentVersion": "!/^0/",
-        "automerge": false
-      }
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "kubernetes": {
+    "fileMatch": ["\\.yaml$"]
+  },
+  "bumpVersion": "patch",
+  "enabledManagers": ["helmv3", "helm-values"],
+  "helm-values": {
+    "fileMatch": [
+      "charts/kube-vip/Chart.yaml$",
+      "charts/kube-vip-cloud-provider/Chart.yaml$"
     ]
-  }
-  
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["charts/kube-vip/Chart.yaml$"],
+      "matchStrings": ["\\sappVersion: (?<currentValue>.*)\\s"],
+      "depNameTemplate": "kube-vip/kube-vip",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["charts/kube-vip-cloud-provider/Chart.yaml$"],
+      "matchStrings": ["\\sappVersion: (?<currentValue>.*)\\s"],
+      "depNameTemplate": "kube-vip/kube-vip-cloud-provider",
+      "datasourceTemplate": "github-releases"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": false
+    }
+  ]
+}
